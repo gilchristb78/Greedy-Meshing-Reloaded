@@ -27,6 +27,12 @@ once we finish combining faces to get a single combined "face" we then pass that
 - [ ] Refactor / Cleanup the code
 - [X] Understand and document how the greedy mesh works
 - [ ] Block Size
+- [ ] Block Textures / Materials
+  - [ ] All Stone Textures
+  - [ ] Dirt / Grass
+  - [ ] Sand
+  - [ ] Water (translucent)
+    - [ ] New Mesh Section
 - [X] Fix border of chunks always renders the faces
   - [X] Chunk.GetBlock (if x or y less than 0 or greater than size, call GetOwner().getBlock)
   - [X] Change rendering so it doesnt auto render at spawn it waits till DrawDist square is populated with blocks then call render
