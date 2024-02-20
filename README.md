@@ -15,7 +15,7 @@ If both blocks are solid or both blocks are air then we do not need to spawn a f
 However if only one block is air and the other is solid we then know a block should spawn and set block to the corresponding block and normal to 1 or -1 depending on which side the solid block is relative to the plane. <br>
 This results in a mask with the following indices.<br>
 ![Mask Indices](https://github.com/gilchristb78/Greedy-Meshing-Reloaded/blob/main/GreedyMeshCapture/CaptureGreedyMask.PNG) <br>
-And the following Values. <br>
+And the following Values. Color = Block Type (gray is stone, purple is Null) and Number = Normal.<br>
 ![Mask Values](https://github.com/gilchristb78/Greedy-Meshing-Reloaded/blob/main/GreedyMeshCapture/CaptureGreedyMaskValues.PNG) <br>
 Then we take the mask weve created and perform that part of greedy meshing that combines like faces. <br>
 ![Greedy Meshing Animation](https://github.com/gilchristb78/Greedy-Meshing-Reloaded/blob/main/GreedyMeshCapture/greedy_anim.svg) <br>
