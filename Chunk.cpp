@@ -2,6 +2,7 @@
 
 
 #include "Chunk.h"
+#include "ChunkGenerator.h"
 #include "ProceduralMeshComponent.h"
 #include "FastNoiseLite.h"
 
@@ -31,8 +32,6 @@ void AChunk::BeginPlay()
 	Blocks.SetNum(ChunkSize.X * ChunkSize.Y * ChunkSize.Z); 
 
 	GenerateBlocks();
-
-	RenderChunk();
 	
 }
 
@@ -106,8 +105,8 @@ void AChunk::GenerateMesh()
 			{	//from the 2d meshes in x axis look at ones going in the y
 				for (ChunkItr[Axis1] = 0; ChunkItr[Axis1] < Axis2Limit; ++ChunkItr[Axis1])
 				{	//and z
-					const auto CurrentBlock = GetBlock(ChunkItr); //current
-					const auto CompareBlock = GetBlock(ChunkItr + AxisMask); //get neighbor along current iteration direction //the other side of the mask we are looking at
+					const auto CurrentBlock = GetBlock(FVector(ChunkItr)); //current
+					const auto CompareBlock = GetBlock(FVector(ChunkItr + AxisMask)); //get neighbor along current iteration direction //the other side of the mask we are looking at
 
 					const bool CurrentBlockOpaque = CurrentBlock != EBlock::Air;
 					const bool CompareBlockOpaque = CompareBlock != EBlock::Air;
@@ -168,7 +167,8 @@ void AChunk::GenerateMesh()
 							ChunkItr,//original vertex
 							ChunkItr + DeltaAxis1, //+ width
 							ChunkItr + DeltaAxis2, //+ height
-							ChunkItr + DeltaAxis1 + DeltaAxis2, width, height);
+							ChunkItr + DeltaAxis1 + DeltaAxis2, //both
+							width, height);
 
 						DeltaAxis1 = FIntVector::ZeroValue;
 						DeltaAxis2 = FIntVector::ZeroValue;
@@ -198,7 +198,7 @@ void AChunk::GenerateMesh()
 void AChunk::CreateQuad(FMask Mask, FIntVector AxisMask, FIntVector V1, FIntVector V2, FIntVector V3, FIntVector V4, const int Width,
 	const int Height)
 {
-	const auto Normal = FVector(AxisMask * Mask.Normal);
+	FVector Normal = FVector(AxisMask * Mask.Normal);
 
 	MeshData.Vertices.Add(FVector(V1) * 100); // add the vertices
 	MeshData.Vertices.Add(FVector(V2) * 100);
@@ -247,10 +247,47 @@ void AChunk::CreateQuad(FMask Mask, FIntVector AxisMask, FIntVector V1, FIntVect
 	VertexCount += 4;
 }
 
-EBlock AChunk::GetBlock(FIntVector Index) const
+EBlock AChunk::GetBlock(FVector Index) const
 {
-	if (Index.X >= ChunkSize.X || Index.Y >= ChunkSize.Y || Index.Z >= ChunkSize.Z || Index.X < 0 || Index.Y < 0 || Index.Z < 0) //faces not culled between chunks
-		return EBlock::Air; //todo outside chunk, actually return the right block?
+	if (Index.Z >= ChunkSize.Z || Index.Z < 0)
+		return EBlock::Air;
+	if (Index.X >= ChunkSize.X || Index.Y >= ChunkSize.Y || Index.X < 0 || Index.Y < 0)
+	{
+		if (Generator)
+		{
+			FVector ChunkPos = GetActorLocation();
+			FVector NewIndex = Index;
+
+			if (NewIndex.X == -1)
+			{
+				ChunkPos.X -= (100 * ChunkSize.X);
+				NewIndex.X = ChunkSize.X - 1;
+			}
+			if (NewIndex.Y == -1)
+			{
+				ChunkPos.Y -= (100 * ChunkSize.Y);
+				NewIndex.Y = ChunkSize.Y - 1;
+			}
+
+			if (NewIndex.X == ChunkSize.X)
+			{
+				ChunkPos.X += (100 * ChunkSize.X);
+				NewIndex.X = 0;
+			}
+			if (NewIndex.Y == ChunkSize.Y)
+			{
+				ChunkPos.Y += (100 * ChunkSize.Y);
+				NewIndex.Y = 0;
+			}
+			
+
+			return Generator->GetBlockFrom(ChunkPos, NewIndex);
+		}
+		else 
+		{
+			return EBlock::Air;
+		}
+	}
 	return Blocks[GetBlockIndex(Index.X, Index.Y, Index.Z)];
 }
 

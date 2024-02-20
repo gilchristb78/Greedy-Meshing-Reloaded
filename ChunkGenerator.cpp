@@ -12,6 +12,15 @@ AChunkGenerator::AChunkGenerator()
 
 }
 
+EBlock AChunkGenerator::GetBlockFrom(FVector ChunkPos, FVector BlockIndex)
+{
+	if (chunks.Contains(ChunkPos))
+	{
+		return chunks[ChunkPos]->GetBlock(BlockIndex);
+	}
+	return EBlock::Air;
+}
+
 // Called when the game starts or when spawned
 void AChunkGenerator::BeginPlay()
 {
@@ -21,12 +30,17 @@ void AChunkGenerator::BeginPlay()
 	{
 		for (int y = -DrawDistance; y <= DrawDistance; ++y)
 		{
-			RenderChunk(FVector(x * ChunkSize.X * 100, y * ChunkSize.Y * 100, 0));
+			CreateChunk(FVector(x * ChunkSize.X * 100, y * ChunkSize.Y * 100, 0));
 		}
+	}
+
+	for(TPair<FVector, AChunk*> chunk : chunks)
+	{
+		chunk.Value->RenderChunk();
 	}
 }
 
-void AChunkGenerator::RenderChunk(FVector ChunkPos)
+void AChunkGenerator::CreateChunk(FVector ChunkPos)
 {
 	if (chunks.Contains(ChunkPos))
 	{
@@ -37,6 +51,7 @@ void AChunkGenerator::RenderChunk(FVector ChunkPos)
 	FTransform transform = FTransform(FRotator::ZeroRotator, ChunkPos, FVector::OneVector);
 	AChunk* chunk = GetWorld()->SpawnActorDeferred<AChunk>(AChunk::StaticClass(), transform, this);
 	chunk->ChunkSize = ChunkSize;
+	chunk->Generator = this;
 	UGameplayStatics::FinishSpawningActor(chunk, transform);
 	chunks.Add(ChunkPos, chunk);
 }
