@@ -25,12 +25,14 @@ once we finish combining faces to get a single combined "face" we then pass that
 ## Goals
 
 - [ ] Refactor / Cleanup the code
-- [ ] Understand and document how the greedy mesh works
+- [X] Understand and document how the greedy mesh works
 - [ ] Block Size
-- [ ] Fix border of chunks always renders the faces
-  - [ ] Chunk.GetBlock (if x or y less than 0 or greater than size, call GetOwner().getBlock)
-  - [ ] Change rendering so it doesnt auto render at spawn it waits till DrawDist square is populated with blocks then call render
+- [X] Fix border of chunks always renders the faces
+  - [X] Chunk.GetBlock (if x or y less than 0 or greater than size, call GetOwner().getBlock)
+  - [X] Change rendering so it doesnt auto render at spawn it waits till DrawDist square is populated with blocks then call render
   - [ ] Newly Rendered Chunks call Render on 4 adjacent chunks to despawn those edges.
+- [ ] New Block Structure
+  - [ ] Which sides are opaque (to be used by greedy mesh)
 - [ ] New Shapes
   - [ ] Slopes
   - [ ] Corners (not Greedy | could be greedy with slopes nearby but probly not worth it)
