@@ -24,9 +24,12 @@ public:
 
 	TMap<FVector, AChunk*> chunks;
 
+	EBlock GetBlockFrom(FVector ChunkPos, FVector BlockIndex);
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	void RenderChunk(FVector ChunkPos);
+	void CreateChunk(FVector ChunkPos);
+
 };

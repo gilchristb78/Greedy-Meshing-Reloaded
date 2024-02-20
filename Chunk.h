@@ -55,6 +55,10 @@ public:
 
 	void RenderChunk();
 
+	EBlock GetBlock(FVector Index) const;
+
+	class AChunkGenerator* Generator;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -80,7 +84,7 @@ private:
 	void CreateQuad(FMask Mask, FIntVector AxisMask, FIntVector V1, FIntVector V2, FIntVector V3, FIntVector V4, const int Width,
 		const int Height);
 
-	EBlock GetBlock(FIntVector Index) const;
+	
 
 	bool CompareMask(FMask M1, FMask M2) const;
 
