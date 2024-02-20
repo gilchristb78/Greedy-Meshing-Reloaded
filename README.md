@@ -1,5 +1,5 @@
 # Greedy-Meshing-Reloaded
-In this repository I will refactor and upgrade my Greedy Meshing algorthm from [Voxels](https://github.com/gilchristb78/Voxel).
+In this repository I will refactor and upgrade my Greedy Meshing algorithm from [Voxels](https://github.com/gilchristb78/Voxel).
 
 ## Generate Mesh
 this function does the bulk of our greedy Meshing, figuring out which faces to render, and which faces to combine before rendering. <br><br>
