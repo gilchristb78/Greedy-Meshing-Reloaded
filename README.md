@@ -18,7 +18,7 @@ This results in a mask with the following indices.<br>
 And the following Values. <br>
 ![Mask Values](https://github.com/gilchristb78/Greedy-Meshing-Reloaded/blob/main/GreedyMeshCapture/CaptureGreedyMaskValues.PNG) <br>
 Then we take the mask weve created and perform that part of greedy meshing that combines like faces. <br>
-![Greedy Meshing Animation](https://github.com/gilchristb78/Voxel/blob/main/ReadmeImages/greedy_anim.svg) <br>
+![Greedy Meshing Animation](https://github.com/gilchristb78/Greedy-Meshing-Reloaded/blob/main/GreedyMeshCapture/greedy_anim.svg) <br>
 once we finish combining faces to get a single combined "face" we then pass that data on to create quad which converts this data into somehting that can be used by UE5 to create our mesh. <br>
 
 
