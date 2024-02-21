@@ -39,6 +39,7 @@ once we finish combining faces to get a single combined "face" we then pass that
   - [ ] Newly Rendered Chunks call Render on 4 adjacent chunks to despawn those edges.
 - [ ] New Block Structure
   - [ ] Which sides are opaque (to be used by greedy mesh)
+  - [ ] Rotation
 - [ ] New Shapes
   - [ ] Slopes
   - [ ] Corners (not Greedy | could be greedy with slopes nearby but probly not worth it)
