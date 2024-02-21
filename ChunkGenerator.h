@@ -20,9 +20,18 @@ public:
 	int DrawDistance = 5;
 
 	UPROPERTY(EditAnywhere, Category = "Chunk World")
+	int VoxelSize = 100;
+
+	UPROPERTY(EditAnywhere, Category = "Chunk World")
 	FIntVector ChunkSize = FIntVector(32,32,32);
 
 	TMap<FVector, AChunk*> chunks;
+
+	UPROPERTY(EditInstanceOnly, Category = "Chunk World")
+	TObjectPtr<UMaterialInterface> Material;
+
+	UPROPERTY(EditInstanceOnly, Category = "Chunk World")
+	TObjectPtr<UMaterialInterface> MaterialWater;
 
 	EBlock GetBlockFrom(FVector ChunkPos, FVector BlockIndex);
 

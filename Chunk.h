@@ -15,9 +15,11 @@ enum class EBlock
 	Null UMETA(DisplayName = "Null"),
 	Air UMETA(DisplayName = "Air"),
 	Stone UMETA(DisplayName = "Stone"),
+	Sand UMETA(DisplayName = "Sand"),
 	Dirt UMETA(DisplayName = "Dirt"),
 	Grass UMETA(DisplayName = "Grass"),
-	Water UMETA(DisplayName = "Water")
+	Water UMETA(DisplayName = "Water"),
+	SlopeGrass UMETA(DisplayName = "Slope Grass")
 };
 
 USTRUCT()
@@ -53,11 +55,18 @@ public:
 
 	FIntVector ChunkSize = FIntVector(2, 2, 2) * 32;
 
+	int VoxelSize = 95;
+
+	int SeaLevel = ChunkSize.Z / 2;
+
 	void RenderChunk();
 
 	EBlock GetBlock(FVector Index) const;
 
 	class AChunkGenerator* Generator;
+
+	TObjectPtr<UMaterialInterface> Material;
+	TObjectPtr<UMaterialInterface> MaterialWater;
 
 protected:
 	// Called when the game starts or when spawned
@@ -68,9 +77,11 @@ protected:
 private:
 
 	FChunkMeshData MeshData;
+	FChunkMeshData MeshDataWater;
 	TObjectPtr<UProceduralMeshComponent> Mesh;
 
 	int VertexCount = 0;
+	int VertexCountWater = 0;
 
 	TObjectPtr<FastNoiseLite> Noise;
 	TArray<EBlock> Blocks;
@@ -84,8 +95,11 @@ private:
 	void CreateQuad(FMask Mask, FIntVector AxisMask, FIntVector V1, FIntVector V2, FIntVector V3, FIntVector V4, const int Width,
 		const int Height);
 
-	
+
+	bool GetBlockOpacity(EBlock block) const;
 
 	bool CompareMask(FMask M1, FMask M2) const;
+
+	int GetTextureIndex(EBlock Block, const FVector Normal) const;
 
 };

@@ -30,7 +30,7 @@ void AChunkGenerator::BeginPlay()
 	{
 		for (int y = -DrawDistance; y <= DrawDistance; ++y)
 		{
-			CreateChunk(FVector(x * ChunkSize.X * 100, y * ChunkSize.Y * 100, 0));
+			CreateChunk(FVector(x * ChunkSize.X * VoxelSize, y * ChunkSize.Y * VoxelSize, 0));
 		}
 	}
 
@@ -52,6 +52,9 @@ void AChunkGenerator::CreateChunk(FVector ChunkPos)
 	AChunk* chunk = GetWorld()->SpawnActorDeferred<AChunk>(AChunk::StaticClass(), transform, this);
 	chunk->ChunkSize = ChunkSize;
 	chunk->Generator = this;
+	chunk->VoxelSize = VoxelSize;
+	chunk->Material = Material;
+	chunk->MaterialWater = MaterialWater;
 	UGameplayStatics::FinishSpawningActor(chunk, transform);
 	chunks.Add(ChunkPos, chunk);
 }
