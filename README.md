@@ -47,10 +47,12 @@ once we finish combining faces to get a single combined "face" we then pass that
   - [ ] New Shapes slope off surface
 - [ ] Caves
   - [ ] Basic
+  - [ ] Perlin Caves
   - [ ] With New Smoothing Shapes
     - [ ] Ground
     - [ ] Ceiling
 - [ ] Biomes
+  - [ ] Voronoi noise
   - [ ] Block Types
     - [ ] Colors
     - [ ] Types
