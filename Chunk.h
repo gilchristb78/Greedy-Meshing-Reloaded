@@ -92,7 +92,7 @@ private:
 
 	void GenerateMesh();
 
-	void CreateQuad(FMask Mask, FIntVector AxisMask, FIntVector V1, FIntVector V2, FIntVector V3, FIntVector V4, const int Width,
+	void CreateQuad(FMask Mask, FIntVector AxisMask, FVector V1, FVector V2, FVector V3, FVector V4, const int Width,
 		const int Height);
 
 
