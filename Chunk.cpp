@@ -170,20 +170,6 @@ void AChunk::GenerateMesh()
 					{
 						Mask[N++] = FMask{ CompareBlock, -1 };
 					}
-
-
-					//if (CurrentBlock == EBlock::Water && !(CompareBlock == EBlock::Water) && !CompareBlockOpaque)
-					//{
-					//	MaskWater[NWater++] = FMask{ EBlock::Water, 1 };
-					//}
-					//else if (CompareBlock == EBlock::Water && !(CurrentBlock == EBlock::Water) && !CurrentBlockOpaque)
-					//{
-					//	MaskWater[NWater++] = FMask{ EBlock::Water, -1 };
-					//}
-					//else
-					//{
-					//	MaskWater[NWater++] = FMask{ EBlock::Null, 0 };
-					//}
 				}
 			}
 
@@ -225,10 +211,10 @@ void AChunk::GenerateMesh()
 						DeltaAxis2[Axis2] = height;
 
 						CreateQuad(CurrentMask, AxisMask,
-							ChunkItr,//original vertex
-							ChunkItr + DeltaAxis1, //+ width
-							ChunkItr + DeltaAxis2, //+ height
-							ChunkItr + DeltaAxis1 + DeltaAxis2, //both
+							FVector(ChunkItr),//original vertex
+							FVector(ChunkItr + DeltaAxis1), //+ width
+							FVector(ChunkItr + DeltaAxis2), //+ height
+							FVector(ChunkItr + DeltaAxis1 + DeltaAxis2), //both
 							width, height);
 
 						DeltaAxis1 = FIntVector::ZeroValue;
@@ -256,44 +242,46 @@ void AChunk::GenerateMesh()
 	}
 }
 
-void AChunk::CreateQuad(FMask Mask, FIntVector AxisMask, FIntVector V1, FIntVector V2, FIntVector V3, FIntVector V4, const int Width,
+void AChunk::CreateQuad(FMask Mask, FIntVector AxisMask, FVector V1, FVector V2, FVector V3, FVector V4, const int Width,
 	const int Height)
 {
-
-	FVector Normal = FVector(AxisMask * Mask.Normal);
-	const FColor Color = FColor(0, 0, 0, GetTextureIndex(Mask.Block, Normal));
-	
-	FVector v1 = FVector(V1);
-	FVector v2 = FVector(V2);
-	FVector v3 = FVector(V3);
-	FVector v4 = FVector(V4);
-
 	FChunkMeshData* data = &MeshData;
 	int* vertex = &VertexCount;
 	
-	if (Mask.Block == EBlock::Water)
+	if (Mask.Block == EBlock::Water) //lower waterline and set data and vertece variables
 	{
-		v1.Z -= .2;
-		v2.Z -= .2;
-		v3.Z -= .2;
-		v4.Z -= .2;
+		V1.Z -= .2;
+		V2.Z -= .2;
+		V3.Z -= .2;
+		V4.Z -= .2;
 		data = &MeshDataWater;
 		vertex = &VertexCountWater;
 	}
 
-	data->Vertices.Add(v1 * VoxelSize); // add the vertices
-	data->Vertices.Add(v2 * VoxelSize);
-	data->Vertices.Add(v3 * VoxelSize);
-	data->Vertices.Add(v4 * VoxelSize);
+	data->Vertices.Append({ //4 vertices (corners of square)
+		(V1 * VoxelSize),
+		(V2 * VoxelSize),
+		(V3 * VoxelSize),
+		(V4 * VoxelSize)
+		});
 
-	data->Triangles.Add(*vertex); //add the triangles
-	data->Triangles.Add(*vertex + 2 + Mask.Normal);
-	data->Triangles.Add(*vertex + 2 - Mask.Normal);
-	data->Triangles.Add(*vertex + 3);
-	data->Triangles.Add(*vertex + 1 - Mask.Normal);
-	data->Triangles.Add(*vertex + 1 + Mask.Normal);
+	data->Triangles.Append({ //2 triangles (3 points each) split up square
+		(*vertex),
+		(*vertex + 2 + Mask.Normal),
+		(*vertex + 2 - Mask.Normal),
+		(*vertex + 3),
+		(*vertex + 1 - Mask.Normal),
+		(*vertex + 1 + Mask.Normal)
+		});
 
-	if (Normal.X == 1 || Normal.X == -1)
+	FVector Normal = FVector(AxisMask * Mask.Normal);
+	data->Normals.Append({ Normal, Normal, Normal, Normal });
+
+	const FColor Color = FColor(0, 0, 0, GetTextureIndex(Mask.Block, Normal));
+	data->Colors.Append({ Color,Color,Color,Color });
+
+	//uv data to be used by texures (could be changed if I made triangles in same order every time
+	if (Normal.X == 1 || Normal.X == -1) 
 	{
 		data->UV0.Append({
 			FVector2D(Width, Height),
@@ -302,7 +290,7 @@ void AChunk::CreateQuad(FMask Mask, FIntVector AxisMask, FIntVector V1, FIntVect
 			FVector2D(0, 0),
 			});
 	}
-	else
+	else // Z == 1 || Z == -1
 	{
 		data->UV0.Append({
 			FVector2D(Height, Width),
@@ -310,14 +298,7 @@ void AChunk::CreateQuad(FMask Mask, FIntVector AxisMask, FIntVector V1, FIntVect
 			FVector2D(0, Width),
 			FVector2D(0, 0),
 			});
-	} //todo y axis (top faces) right now rotations dont matter.
-
-	data->Colors.Append({ Color,Color,Color,Color });
-
-	data->Normals.Add(Normal); //add the normal for the 4 vertex
-	data->Normals.Add(Normal);
-	data->Normals.Add(Normal);
-	data->Normals.Add(Normal);
+	} //y axis (top faces) right now rotations dont matter so may be wrong.
 
 	*vertex += 4;
 }
@@ -344,7 +325,7 @@ bool AChunk::GetBlockOpacity(EBlock block) const
 
 EBlock AChunk::GetBlock(FVector Index) const
 {
-	if (Index.Z >= ChunkSize.Z || Index.Z < 0)
+	if (Index.Z >= ChunkSize.Z || Index.Z < 0) //above or below chunk
 		return EBlock::Air;
 	if (Index.X >= ChunkSize.X || Index.Y >= ChunkSize.Y || Index.X < 0 || Index.Y < 0)
 	{
@@ -378,10 +359,7 @@ EBlock AChunk::GetBlock(FVector Index) const
 
 			return Generator->GetBlockFrom(ChunkPos, NewIndex);
 		}
-		else 
-		{
-			return EBlock::Air;
-		}
+		return EBlock::Null;
 	}
 	return Blocks[GetBlockIndex(Index.X, Index.Y, Index.Z)];
 }
@@ -408,7 +386,7 @@ int AChunk::GetTextureIndex(EBlock Block, const FVector Normal) const
 	default:
 		return 255;
 	}
-	return 0;
+	return 255;
 }
 
 void AChunk::RenderChunk()
