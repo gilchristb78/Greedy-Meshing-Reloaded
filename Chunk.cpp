@@ -136,9 +136,9 @@ void AChunk::GenerateMesh()
 			int N = 0;
 			//int NWater = 0;
 
-			for (ChunkItr[Axis2] = 0; ChunkItr[Axis2] < Axis1Limit; ++ChunkItr[Axis2])
+			for (ChunkItr[Axis2] = 0; ChunkItr[Axis2] < Axis2Limit; ++ChunkItr[Axis2])
 			{	//from the 2d meshes in x axis look at ones going in the y
-				for (ChunkItr[Axis1] = 0; ChunkItr[Axis1] < Axis2Limit; ++ChunkItr[Axis1])
+				for (ChunkItr[Axis1] = 0; ChunkItr[Axis1] < Axis1Limit; ++ChunkItr[Axis1])
 				{	//and z
 					const auto CurrentBlock = GetBlock(FVector(ChunkItr)); //current
 					const auto CompareBlock = GetBlock(FVector(ChunkItr + AxisMask)); //get neighbor along current iteration direction //the other side of the mask we are looking at
